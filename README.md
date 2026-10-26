@@ -3,6 +3,10 @@
 
 > **Celebrio AI** is a production-grade, GenAI-powered celebration and event planning platform designed for high-stress, high-detail event management across **Weddings**, **Milestone Birthdays**, and **Community Gatherings**. Built with React, TypeScript, a glassmorphic design system, and a dual-engine AI architecture (Google Gemini 1.5/2.0 Flash/Pro + Instant Offline Heuristic Intelligence).
 
+🌐 **Live Vercel Deployment:** [https://celebrio-ai-eight.vercel.app/](https://celebrio-ai-eight.vercel.app/)  
+📦 **GitHub Repository:** [https://github.com/Vasi1951/celebrio-ai](https://github.com/Vasi1951/celebrio-ai)  
+⚡ **Production Verification:** Verified 100% Operational (Status 200, 0 Errors, All Personas & GenAI Active)
+
 ---
 
 ## 📑 Table of Contents
