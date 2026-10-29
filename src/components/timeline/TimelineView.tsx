@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEvent } from '../../context/EventContext';
-import { MilestonePhase, MilestoneItem, RunOfShowItem } from '../../types';
+import { MilestonePhase } from '../../types';
 import { formatDate, formatTime } from '../../utils/formatters';
 import { generateICalendarData, generateRunOfShowSheet, downloadFile } from '../../utils/export';
 import confetti from 'canvas-confetti';
@@ -161,7 +161,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({
       {activeTab === 'run_of_show' && (
         <div className="run-of-show-timeline mt-24">
           <div className="ros-track">
-            {runOfShow.map((item, index) => (
+            {runOfShow.map((item) => (
               <div
                 key={item.id}
                 className={`ros-card glass-panel ${item.isMilestone ? 'border-accent-milestone' : ''}`}

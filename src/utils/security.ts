@@ -120,3 +120,85 @@ export function sanitizeCurrencyAmount(amount: unknown): number {
   }
   return 0;
 }
+
+/**
+ * In-memory client rate limiter to protect against request flooding & rapid automated clicks
+ */
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+export function checkRateLimit(
+  key: string,
+  limit: number = 30,
+  windowMs: number = 60000
+): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+
+  if (!entry || now > entry.resetTime) {
+    rateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
+    return { allowed: true, remaining: limit - 1 };
+  }
+
+  if (entry.count >= limit) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  entry.count += 1;
+  return { allowed: true, remaining: limit - entry.count };
+}
+
+export function resetRateLimit(key?: string): void {
+  if (key) {
+    rateLimitMap.delete(key);
+  } else {
+    rateLimitMap.clear();
+  }
+}
+
+/**
+ * Strict schema validation for AI Action Proposals before execution
+ * Prevents unauthorized or malformed state mutation
+ */
+export function validateActionProposal(proposal: unknown): { valid: boolean; reason?: string } {
+  if (!proposal || typeof proposal !== 'object') {
+    return { valid: false, reason: 'Proposal must be an object' };
+  }
+
+  const p = proposal as Record<string, any>;
+  const allowedTypes = ['add_budget_item', 'add_milestone', 'add_vendor', 'update_budget', 'apply_theme'];
+
+  if (!allowedTypes.includes(p.actionType)) {
+    return { valid: false, reason: `Unknown or disallowed actionType: ${p.actionType}` };
+  }
+
+  if (!p.payload || typeof p.payload !== 'object') {
+    return { valid: false, reason: 'Proposal payload is missing or invalid' };
+  }
+
+  if (p.actionType === 'add_budget_item') {
+    if (!p.payload.name || typeof p.payload.name !== 'string') {
+      return { valid: false, reason: 'Budget item must have a valid string name' };
+    }
+  }
+
+  if (p.actionType === 'add_milestone') {
+    if (!p.payload.title || typeof p.payload.title !== 'string') {
+      return { valid: false, reason: 'Milestone must have a valid title' };
+    }
+  }
+
+  if (p.actionType === 'add_vendor') {
+    if (!p.payload.name || typeof p.payload.name !== 'string') {
+      return { valid: false, reason: 'Vendor must have a valid name' };
+    }
+  }
+
+  if (p.actionType === 'apply_theme') {
+    if (!p.payload.title || typeof p.payload.title !== 'string') {
+      return { valid: false, reason: 'Theme proposal must have a valid title' };
+    }
+  }
+
+  return { valid: true };
+}
+

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useEvent } from '../../context/EventContext';
 import { calculateBudgetSummary, formatCurrency, formatCategoryLabel } from '../../utils/formatters';
-import { BudgetCategory, PaymentStatus, BudgetItem } from '../../types';
+import { PaymentStatus } from '../../types';
 import { Plus, DollarSign, AlertCircle, CheckCircle, TrendingDown, TrendingUp, ShieldCheck, Sparkles, Trash2, Filter } from 'lucide-react';
 
 interface BudgetViewProps {

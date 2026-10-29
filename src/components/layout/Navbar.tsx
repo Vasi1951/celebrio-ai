@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useEvent } from '../../context/EventContext';
-import { EventType } from '../../types';
-import { Sparkles, Calendar, Heart, PartyPopper, Users, Settings, Download, FileText, RotateCcw, Eye } from 'lucide-react';
+import { Sparkles, Calendar, Heart, PartyPopper, Users, Settings, Download, FileText, RotateCcw, Eye, Edit3 } from 'lucide-react';
 import { generateICalendarData, downloadFile, generateRunOfShowSheet } from '../../utils/export';
 
 interface NavbarProps {
@@ -166,6 +165,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSettings, onOpenEditEvent 
               </div>
             )}
           </div>
+
+          {/* Edit Event Details */}
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={onOpenEditEvent}
+            title="Edit Event Details"
+            aria-label="Edit event profile"
+          >
+            <Edit3 size={15} />
+            <span className="hide-mobile">Edit</span>
+          </button>
 
           {/* Reset Template */}
           <button

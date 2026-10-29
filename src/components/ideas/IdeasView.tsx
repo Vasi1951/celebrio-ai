@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useEvent } from '../../context/EventContext';
 import { GeneratedIdea } from '../../types';
 import { generateHeuristicIdeas } from '../../services/heuristicAI';
-import { Sparkles, Bookmark, BookmarkCheck, Copy, Check, Palette, Utensils, Music, Mic2, Lightbulb, Smile, Plus } from 'lucide-react';
+import { Sparkles, Bookmark, BookmarkCheck, Copy, Check, Palette, Utensils, Music, Mic2, Lightbulb, Smile } from 'lucide-react';
 
 interface IdeasViewProps {
   onAskAI: (prompt: string) => void;

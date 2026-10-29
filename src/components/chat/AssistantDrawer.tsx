@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useEvent } from '../../context/EventContext';
-import { Sparkles, Send, X, Bot, User, Trash2, ArrowRight, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, Send, X, Bot, User, Trash2, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface AssistantDrawerProps {
   isOpen: boolean;
@@ -26,6 +26,15 @@ export const AssistantDrawer: React.FC<AssistantDrawerProps> = ({
 
   const [inputPrompt, setInputPrompt] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   // Auto-fill prompt if passed externally
   useEffect(() => {

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEvent } from '../../context/EventContext';
 import { BudgetCategory, PaymentStatus } from '../../types';
 import { sanitizePlainText, sanitizeCurrencyAmount } from '../../utils/security';
-import { Plus, X, DollarSign } from 'lucide-react';
+import { X, DollarSign } from 'lucide-react';
 
 interface AddExpenseModalProps {
   isOpen: boolean;
@@ -21,6 +21,15 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ isOpen, onClos
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('unpaid');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

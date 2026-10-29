@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useEvent } from '../../context/EventContext';
-import { VendorCategory, VendorStatus, VendorItem } from '../../types';
-import { formatCurrency, formatDate } from '../../utils/formatters';
-import { Plus, CheckSquare, Square, FileCheck, Phone, Mail, Globe, Star, Sparkles, Trash2, ChevronDown, ChevronUp, Layers } from 'lucide-react';
+import { VendorCategory, VendorStatus } from '../../types';
+import { formatCurrency } from '../../utils/formatters';
+import { Plus, CheckSquare, Square, FileCheck, Phone, Mail, Globe, Sparkles, Trash2, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 
 interface VendorViewProps {
   onAddVendor: () => void;

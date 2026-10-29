@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEvent } from '../../context/EventContext';
 import { maskApiKey } from '../../utils/security';
-import { Settings, Key, ShieldCheck, Cpu, Eye, EyeOff, X, Check, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Cpu, Eye, EyeOff, X, Check, AlertCircle } from 'lucide-react';
 
 interface AISettingsModalProps {
   isOpen: boolean;
@@ -16,6 +16,15 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
   const [showKey, setShowKey] = useState(false);
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
   const [testMessage, setTestMessage] = useState('');
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -51,9 +60,9 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
         setTestStatus('success');
         setTestMessage('Gemini API verified successfully!');
       } else {
-        const err = await res.text();
+        const errText = await res.text();
         setTestStatus('error');
-        setTestMessage(`API key rejected by Google (HTTP ${res.status}). Verify key in Google AI Studio.`);
+        setTestMessage(`API key rejected (HTTP ${res.status}): ${errText.slice(0, 70)}`);
       }
     } catch (e: any) {
       setTestStatus('error');

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEvent } from '../../context/EventContext';
 import { CurrencyCode } from '../../types';
 import { sanitizePlainText, sanitizeCurrencyAmount } from '../../utils/security';
-import { Edit3, X, Calendar, DollarSign, Users, MapPin } from 'lucide-react';
+import { Edit3, X } from 'lucide-react';
 
 interface EditEventModalProps {
   isOpen: boolean;
@@ -25,6 +25,15 @@ export const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose 
   const [currency, setCurrency] = useState<CurrencyCode>(event.currency);
   const [contingencyPercent, setContingencyPercent] = useState(event.contingencyPercent.toString());
   const [description, setDescription] = useState(event.description);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -184,6 +193,18 @@ export const EditEventModal: React.FC<EditEventModalProps> = ({ isOpen, onClose 
                 <option value="AUD">AUD ($)</option>
                 <option value="INR">INR (₹)</option>
               </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Contingency Reserve (%)</label>
+              <input
+                type="number"
+                className="input-control"
+                value={contingencyPercent}
+                onChange={e => setContingencyPercent(e.target.value)}
+                min="0"
+                max="50"
+                placeholder="10"
+              />
             </div>
           </div>
 

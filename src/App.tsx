@@ -7,6 +7,7 @@ import { TimelineView } from './components/timeline/TimelineView';
 import { VendorView } from './components/vendors/VendorView';
 import { IdeasView } from './components/ideas/IdeasView';
 import { AssistantDrawer } from './components/chat/AssistantDrawer';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 // Modals
 import { EditEventModal } from './components/modals/EditEventModal';
@@ -16,7 +17,7 @@ import { AddMilestoneModal } from './components/modals/AddMilestoneModal';
 import { AddRunOfShowModal } from './components/modals/AddRunOfShowModal';
 import { AddVendorModal } from './components/modals/AddVendorModal';
 
-import { DollarSign, Clock, Store, Sparkles, MessageSquare } from 'lucide-react';
+import { DollarSign, Clock, Store, Sparkles } from 'lucide-react';
 import './App.css';
 
 type ActiveTab = 'budget' | 'timeline' | 'vendors' | 'ideas';
@@ -212,8 +213,10 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <EventProvider>
-      <MainAppContent />
-    </EventProvider>
+    <ErrorBoundary>
+      <EventProvider>
+        <MainAppContent />
+      </EventProvider>
+    </ErrorBoundary>
   );
 }

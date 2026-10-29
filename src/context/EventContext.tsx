@@ -15,6 +15,7 @@ import {
 } from '../types';
 import { SEED_EVENTS } from '../data/seedEvents';
 import { askGeminiAssistant } from '../services/geminiService';
+import { validateActionProposal, checkRateLimit } from '../utils/security';
 
 interface EventContextType {
   activeEventType: EventType;
@@ -102,7 +103,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       id: 'msg-welcome',
       sender: 'assistant',
       text: "👋 Welcome to **Celebrio AI**! I'm your GenAI Celebration & Event Planning Copilot. Ask me to balance your budget, review your timeline run-of-show, brainstorm themes, or craft heartfelt speeches.",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: '10:00 AM',
       suggestedPrompts: [
         'How can I cut $1,500 from this budget?',
         'Review our day-of run-of-show schedule',
@@ -303,6 +304,12 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Apply Structured Action Proposals from AI Assistant
   const applyActionProposal = useCallback((proposal: ActionProposal) => {
+    const validation = validateActionProposal(proposal);
+    if (!validation.valid) {
+      console.warn('ActionProposal failed schema validation:', validation.reason);
+      return;
+    }
+
     if (proposal.actionType === 'add_budget_item' && proposal.payload) {
       addBudgetItem(proposal.payload);
     } else if (proposal.actionType === 'add_milestone' && proposal.payload) {
@@ -325,6 +332,19 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Chat message sender
   const sendChatMessage = useCallback(async (userText: string) => {
     if (!userText.trim()) return;
+
+    // Rate-limit: max 30 messages per minute per client session
+    const rateCheck = checkRateLimit('chat_messages', 30, 60000);
+    if (!rateCheck.allowed) {
+      const throttledMsg: ChatMessage = {
+        id: `rate-limit-${Date.now()}`,
+        sender: 'assistant',
+        text: '⏳ Message rate limit reached. Please wait a few seconds before asking another question.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setChatMessages(prev => [...prev, throttledMsg]);
+      return;
+    }
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -421,6 +441,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useEvent() {
   const context = useContext(EventContext);
   if (!context) {

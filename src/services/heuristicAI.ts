@@ -1,4 +1,4 @@
-import { FullEventPlan, ChatMessage, ActionProposal, GeneratedIdea } from '../types';
+import { FullEventPlan, ActionProposal, GeneratedIdea } from '../types';
 import { formatCurrency } from '../utils/formatters';
 
 /**
@@ -207,7 +207,7 @@ export function generateHeuristicIdeas(
         category: 'menu',
         title: 'Artisan Grazing Table with Local Honeycomb & Cheeses',
         description: 'A 12-foot rustic wooden board layered with aged white cheddar, triple-cream brie, fresh figs, honeycomb slabs, rosemary focaccia, and marcona almonds.',
-        tags: ['Gourmet', 'Interactive', 'Visual Showcase'],
+        tags: [event.eventType, 'Gourmet', 'Interactive', 'Visual Showcase'],
         estimatedCostImpact: 'medium',
         saved: false,
       },

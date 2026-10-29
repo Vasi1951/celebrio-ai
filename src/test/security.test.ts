@@ -5,6 +5,9 @@ import {
   sanitizePromptForAI,
   maskApiKey,
   sanitizeCurrencyAmount,
+  validateActionProposal,
+  checkRateLimit,
+  resetRateLimit,
 } from '../utils/security';
 
 describe('Security & Sanitization Guardrails Suite', () => {
@@ -56,4 +59,57 @@ describe('Security & Sanitization Guardrails Suite', () => {
     expect(sanitizeCurrencyAmount(-100)).toBe(0);
     expect(sanitizeCurrencyAmount(NaN)).toBe(0);
   });
+
+  it('validates structured AI Action Proposals against schema', () => {
+    // Valid budget proposal
+    const validBudget = validateActionProposal({
+      actionType: 'add_budget_item',
+      label: 'Add Late Night Snack Bar',
+      payload: { name: 'Late Night Tacos', category: 'catering', estimatedCost: 750 },
+    });
+    expect(validBudget.valid).toBe(true);
+
+    // Invalid action type
+    const invalidType = validateActionProposal({
+      actionType: 'malicious_exec',
+      label: 'Inject code',
+      payload: {},
+    });
+    expect(invalidType.valid).toBe(false);
+
+    // Missing payload
+    const missingPayload = validateActionProposal({
+      actionType: 'add_budget_item',
+      label: 'Add item',
+    });
+    expect(missingPayload.valid).toBe(false);
+
+    // Missing required field in budget payload
+    const missingName = validateActionProposal({
+      actionType: 'add_budget_item',
+      label: 'Add item',
+      payload: { estimatedCost: 200 },
+    });
+    expect(missingName.valid).toBe(false);
+  });
+
+  it('enforces client-side rate limiting on rapid requests', () => {
+    resetRateLimit('test_user');
+    // Allow up to 3 calls
+    const res1 = checkRateLimit('test_user', 3, 10000);
+    expect(res1.allowed).toBe(true);
+    expect(res1.remaining).toBe(2);
+
+    const res2 = checkRateLimit('test_user', 3, 10000);
+    expect(res2.allowed).toBe(true);
+
+    const res3 = checkRateLimit('test_user', 3, 10000);
+    expect(res3.allowed).toBe(true);
+
+    // 4th call should be blocked
+    const res4 = checkRateLimit('test_user', 3, 10000);
+    expect(res4.allowed).toBe(false);
+    expect(res4.remaining).toBe(0);
+  });
 });
+
